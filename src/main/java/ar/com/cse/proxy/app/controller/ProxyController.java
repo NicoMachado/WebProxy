@@ -50,7 +50,7 @@ public class ProxyController {
 		String inputLine;
 		StringBuffer content = new StringBuffer();
 		while ((inputLine = in.readLine()) != null) {
-		    content.append(inputLine);
+		    content.append(inputLine).append(System.getProperty("line.separator"));
 		}
 		in.close();
 		con.disconnect();		
@@ -113,7 +113,7 @@ public class ProxyController {
 		String inputLine;
 		StringBuffer content = new StringBuffer();
 		while ((inputLine = in.readLine()) != null) {
-		    content.append(inputLine);
+		    content.append(inputLine).append(System.getProperty("line.separator"));
 		}
 		in.close();
 		con.disconnect();		
