@@ -42,6 +42,7 @@ public class ProxyController {
 
 		url = new URL(proxyUrl);
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		con.setRequestProperty("Accept", "*/*");			//Force Accept header to */* 
 		con.setRequestProperty("User-Agent", request.getHeader("User-Agent")); //By pass User-Agent
 		con.setRequestMethod("GET");
 		
@@ -102,7 +103,7 @@ public class ProxyController {
 		con.setRequestMethod("POST");
 
 		con.setRequestProperty("User-Agent", request.getHeader("User-Agent")); //By pass User-Agent
-		con.setRequestProperty("Accept", "*/*"); 
+		con.setRequestProperty("Accept", "*/*");			//Force Accept header to */* 
 		con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 		con.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
 		con.setDoOutput(true);
