@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Enumeration;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.HandlerMapping;
 
 @Controller
 public class ProxyController {
+	private static final String      CONTENT_ENCODING_GZIP = "gzip";
 
 	//On a GET request, it should make a get request to <url>
 	@RequestMapping(value="/proxy/**", method=RequestMethod.GET)
@@ -42,17 +45,75 @@ public class ProxyController {
 
 		url = new URL(proxyUrl);
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-		con.setRequestProperty("Accept", "*/*");			//Force Accept header to */* 
-		con.setRequestProperty("User-Agent", request.getHeader("User-Agent")); //By pass User-Agent
+		con.setUseCaches(false);
+		con.setDoInput(true);
+		con.setDoOutput(true);
+
+		System.out.println("Request Headers:");
+	    Enumeration<String> names = request.getHeaderNames();
+	    while (names.hasMoreElements()) {
+	      String name = (String) names.nextElement();
+	      Enumeration<String> values = request.getHeaders(name); // support multiple values
+	      if (values != null) {
+	        while (values.hasMoreElements()) {
+	          String value = (String) values.nextElement();
+	          con.setRequestProperty(name, value);
+//	          System.out.println(name + ": " + value);
+	        }
+	      }
+	    }
+
+
+	    if (request.getHeader("Accept") == null)
+	    	con.setRequestProperty("Accept", "*/*");				//Force Accept header to */*
+	    else 
+	    	con.setRequestProperty("Accept", request.getHeader("Accept")); 
+/*
+//		//accept-encoding: gzip, deflate, br
+		con.setRequestProperty("Accept-Encoding", request.getHeader("Accept-Encoding")); //By pass Accept-Encoding
+//	    con.setRequestProperty("Accept-Encoding", "*, gzip"); //By pass Accept-Encoding
+	    System.out.println(request.getHeader("Accept-Encoding"));
+//		
+		con.setRequestProperty("Accept-Language", request.getHeader("Accept-Language")); //By pass accept-language
+
+		//Cache-Control
+		con.setRequestProperty("Cache-Control", request.getHeader("Cache-Control")); //By pass accept-language
+
+		//Dnt
+		con.setRequestProperty("Dnt", request.getHeader("Dnt")); //By pass accept-language
+
+		//Upgrade-Insecure-Requests
+		con.setRequestProperty("Upgrade-Insecure-Requests", request.getHeader("Upgrade-Insecure-Requests")); //By pass Upgrade-Insecure-Requests
+*/		
+	    con.setRequestProperty("User-Agent", request.getHeader("User-Agent")); 			//By pass User-Agent
+	    
 		con.setRequestMethod("GET");
+
+		//Content Encoding
+		String contentEncoding = con.getContentEncoding();
+		System.out.println(contentEncoding);
+		System.out.println("Length : " + con.getContentLength());
 		
-		BufferedReader in = new BufferedReader(
-		new InputStreamReader(con.getInputStream()));
+		BufferedReader in = null;
+
+		if (CONTENT_ENCODING_GZIP.equalsIgnoreCase(contentEncoding)) {
+			in = new BufferedReader(
+					new InputStreamReader(new GZIPInputStream(con.getInputStream())));
+        } else {
+        	in = new BufferedReader(
+    				new InputStreamReader(con.getInputStream()));
+        }
+		
+		
 		String inputLine;
 		StringBuffer content = new StringBuffer();
 		while ((inputLine = in.readLine()) != null) {
 		    content.append(inputLine).append(System.getProperty("line.separator"));
+		    System.out.println(inputLine);
 		}
+		
+		
+		
 		in.close();
 		con.disconnect();		
 
