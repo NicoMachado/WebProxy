@@ -58,7 +58,6 @@ public class ProxyController {
 	        while (values.hasMoreElements()) {
 	          String value = (String) values.nextElement();
 	          con.setRequestProperty(name, value);
-//	          System.out.println(name + ": " + value);
 	        }
 	      }
 	    }
@@ -68,34 +67,16 @@ public class ProxyController {
 	    	con.setRequestProperty("Accept", "*/*");				//Force Accept header to */*
 	    else 
 	    	con.setRequestProperty("Accept", request.getHeader("Accept")); 
-/*
-//		//accept-encoding: gzip, deflate, br
-		con.setRequestProperty("Accept-Encoding", request.getHeader("Accept-Encoding")); //By pass Accept-Encoding
-//	    con.setRequestProperty("Accept-Encoding", "*, gzip"); //By pass Accept-Encoding
-	    System.out.println(request.getHeader("Accept-Encoding"));
-//		
-		con.setRequestProperty("Accept-Language", request.getHeader("Accept-Language")); //By pass accept-language
 
-		//Cache-Control
-		con.setRequestProperty("Cache-Control", request.getHeader("Cache-Control")); //By pass accept-language
-
-		//Dnt
-		con.setRequestProperty("Dnt", request.getHeader("Dnt")); //By pass accept-language
-
-		//Upgrade-Insecure-Requests
-		con.setRequestProperty("Upgrade-Insecure-Requests", request.getHeader("Upgrade-Insecure-Requests")); //By pass Upgrade-Insecure-Requests
-*/		
 	    con.setRequestProperty("User-Agent", request.getHeader("User-Agent")); 			//By pass User-Agent
 	    
 		con.setRequestMethod("GET");
 
 		//Content Encoding
 		String contentEncoding = con.getContentEncoding();
-		System.out.println(contentEncoding);
-		System.out.println("Length : " + con.getContentLength());
 		
 		BufferedReader in = null;
-
+		
 		if (CONTENT_ENCODING_GZIP.equalsIgnoreCase(contentEncoding)) {
 			in = new BufferedReader(
 					new InputStreamReader(new GZIPInputStream(con.getInputStream())));
