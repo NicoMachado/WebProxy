@@ -38,7 +38,6 @@ public class ProxyController {
 		proxyUrl = proxyUrl.replace("http:/", "http://");
 		proxyUrl = proxyUrl.replace("https:/", "https://");
 		
-		
 		System.out.println(proxyUrl);
 		
 		//..doing a GET request.
@@ -96,8 +95,6 @@ public class ProxyController {
 		    content.append(inputLine).append(System.getProperty("line.separator"));
 		    System.out.println(inputLine);
 		}
-		
-		
 		
 		in.close();
 		con.disconnect();		
