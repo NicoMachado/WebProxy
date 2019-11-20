@@ -17,13 +17,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.headers().disable();
-	//	super.configure(http);
 	}
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		// TODO Auto-generated method stub
-		//super.configure(web);
 		web.httpFirewall(allowUrlEncodedSlashHttpFirewall());
 	}
 
