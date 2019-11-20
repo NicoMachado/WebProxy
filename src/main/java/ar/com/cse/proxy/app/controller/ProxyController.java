@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,7 +25,7 @@ public class ProxyController {
 	private static final String      CONTENT_ENCODING_GZIP = "gzip";
 
 	//On a GET request, it should make a get request to <url>
-	@RequestMapping(value="/proxy/**", method=RequestMethod.GET)
+	@GetMapping(value="/proxy/**")
 	@ResponseBody
 	public String index(HttpServletRequest request) throws IOException {
 
@@ -45,21 +46,22 @@ public class ProxyController {
 
 		url = new URL(proxyUrl);
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-		con.setUseCaches(false);
-		con.setDoInput(true);
-		con.setDoOutput(true);
 
-		System.out.println("Request Headers:");
+		System.out.println("Inboud Request Headers:");
 	    Enumeration<String> names = request.getHeaderNames();
 	    while (names.hasMoreElements()) {
 	      String name = (String) names.nextElement();
-	      Enumeration<String> values = request.getHeaders(name); // support multiple values
-	      if (values != null) {
-	        while (values.hasMoreElements()) {
-	          String value = (String) values.nextElement();
-	          con.setRequestProperty(name, value);
-	        }
-	      }
+          if (!name.toLowerCase().equals(new String("cookie"))) {
+    	      Enumeration<String> values = request.getHeaders(name); // support multiple values
+    	      if (values != null) {
+    	        while (values.hasMoreElements()) {
+    	          String value = (String) values.nextElement();
+    	          con.setRequestProperty(name, value);
+    	  			System.out.println("\tName: " +  name + "\tValue: " + value);
+    	          
+    	        }
+    	      }
+          }
 	    }
 
 
@@ -72,6 +74,8 @@ public class ProxyController {
 	    
 		con.setRequestMethod("GET");
 
+		System.out.println("Connecting to : " + proxyUrl);
+		
 		//Content Encoding
 		String contentEncoding = con.getContentEncoding();
 		
